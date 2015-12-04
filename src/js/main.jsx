@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { Sparklines, SparklinesLine, SparklinesSpots } from 'react-sparklines';
 import spark from 'spark';
 
 import utils from './utils';
@@ -18,7 +19,7 @@ class PageLoading extends React.Component {
 class Temperature extends React.Component {
   render() {
     return (
-      <div className='temperature-container'>
+      <div style={{marginBottom: "20px"}}>
         <div className='main-temp'>
           {this.props.temperature.celsius} &deg;C
         </div>
@@ -44,37 +45,23 @@ class App extends React.Component {
     };
   }
 
-
-  addTemperatureToHistory(celsius) {
-    let temperature_history = this.state.temperature_history;
-    temperature_history.unshift(celsius);
-    if(temperature_history.length > HISTORY_SIZE) {
-      temperature_history.pop();
-    }
-
-    this.setState({
-      temperature_history
-    });
-  }
-
   setTemperature(value) {
     var celsius = value - 273.15;
     var fahrenheit = utils.toFixed(utils.celsiusToFahrenheit(celsius), 2);
     celsius = utils.toFixed(celsius, 1);
 
-    this.addTemperatureToHistory(celsius);
-
     this.setState({
       temperature: {
         celsius,
         fahrenheit,
-      }
+      },
+      temperature_history: this.state.temperature_history.concat([celsius])
     });
   }
 
-  setLight(value) {
+  setLight(light) {
     this.setState({
-      light: value
+      light
     });
   }
 
@@ -107,10 +94,15 @@ class App extends React.Component {
     let style = {
         backgroundColor: `rgba(4, 30, 55, ${this.state.light / 4096})`
     }
-
     return (
       <div className='app-container' style={style}>
-        <Temperature temperature={this.state.temperature} />
+        <div className='temperature-widget'>
+          <Temperature temperature={this.state.temperature} />
+
+          <Sparklines data={this.state.temperature_history} limit={20} width={450} height={100}>
+            <SparklinesLine style={{stroke: "#82BB5D", strokeWidth: "2", fill: "none"}} />
+          </Sparklines>
+        </div>
       </div>
     );
   }

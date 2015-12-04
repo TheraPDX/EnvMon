@@ -5,6 +5,7 @@
   "dependencies": {
     "react": "^0.14.3",
     "react-dom": "^0.14.3",
+    "react-sparklines": "^1.4.2",
     "spark": "^1.0.0"
   },
   "devDependencies": {
