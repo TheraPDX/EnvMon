@@ -2,6 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import spark from 'spark';
 
+import utils from './utils';
+
 const TOKEN = '';
 const HISTORY_SIZE = '10';
 
@@ -42,15 +44,6 @@ class App extends React.Component {
     };
   }
 
-  // XXX move in utils
-  celsiusToFahrenheit(celsius) {
-    return (celsius * 1.8) + 32;
-  }
-
-  // XXX move in utils
-  toFixed(num, dp) {
-    return Math.floor(num * Math.pow(10, dp)) / Math.pow(10, dp);
-  }
 
   addTemperatureToHistory(celsius) {
     let temperature_history = this.state.temperature_history;
@@ -66,8 +59,8 @@ class App extends React.Component {
 
   setTemperature(value) {
     var celsius = value - 273.15;
-    var fahrenheit = this.toFixed(this.celsiusToFahrenheit(celsius), 2);
-    celsius = this.toFixed(celsius, 1);
+    var fahrenheit = utils.toFixed(utils.celsiusToFahrenheit(celsius), 2);
+    celsius = utils.toFixed(celsius, 1);
 
     this.addTemperatureToHistory(celsius);
 
