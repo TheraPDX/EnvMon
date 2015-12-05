@@ -6,7 +6,6 @@ import spark from 'spark';
 import utils from './utils';
 
 const TOKEN = '';
-const HISTORY_SIZE = '10';
 
 class PageLoading extends React.Component {
   render() {
