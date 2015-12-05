@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Sparklines, SparklinesLine, SparklinesSpots } from 'react-sparklines';
+import { Sparklines, SparklinesLine } from 'react-sparklines';
 import spark from 'spark';
 
 import utils from './utils';
