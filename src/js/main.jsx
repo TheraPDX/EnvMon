@@ -54,14 +54,14 @@ class App extends React.Component {
         celsius,
         fahrenheit,
       },
-      temperature_history: this.state.temperature_history.concat([celsius])
+      temperature_history: [...this.state.temperature_history, celsius],
     });
   }
 
   setLight(light) {
     this.setState({
       light
-    });
+    })
   }
 
   componentWillMount() {
