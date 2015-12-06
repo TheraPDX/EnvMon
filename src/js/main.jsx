@@ -5,7 +5,8 @@ import spark from 'spark';
 
 import utils from './utils';
 
-const TOKEN = '';
+const TOKEN = '',
+      SPARKLINE_LIMIT = 30;
 
 class PageLoading extends React.Component {
   render() {
@@ -45,9 +46,12 @@ class App extends React.Component {
   }
 
   setTemperature(value) {
+    if(isNaN(value)) {
+      return;
+    }
     var celsius = value - 273.15;
-    var fahrenheit = utils.toFixed(utils.celsiusToFahrenheit(celsius), 2);
-    celsius = utils.toFixed(celsius, 1);
+    var fahrenheit = utils.formatNumber(utils.celsiusToFahrenheit(celsius), 2);
+    celsius = utils.formatNumber(celsius, 1);
 
     this.setState({
       temperature: {
@@ -98,7 +102,7 @@ class App extends React.Component {
         <div className='temperature-widget'>
           <Temperature temperature={this.state.temperature} />
 
-          <Sparklines data={this.state.temperature_history} limit={20} width={450} height={100}>
+          <Sparklines data={this.state.temperature_history} limit={SPARKLINE_LIMIT} width={450} height={100}>
             <SparklinesLine style={{stroke: "#82BB5D", strokeWidth: "2", fill: "none"}} />
           </Sparklines>
         </div>
