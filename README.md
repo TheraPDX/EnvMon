@@ -5,7 +5,7 @@ Monitor your environment temperature and light using a Particle Photon and displ
 
 ### Web dashboard
 
-First, edit `particle-login.json` file at the root of the project with your Particle Cloud credentials or your Access Token:
+First, edit `particle-login.json` at the root of the project with your `Particle Cloud credentials` or your `accessToken`:
 
 ```json
 { "username": "user@email.com", "password": "pass" }
