@@ -2,11 +2,11 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Sparklines, SparklinesLine } from 'react-sparklines';
 import spark from 'spark';
-
 import utils from './utils';
 
-const TOKEN = '',
-      SPARKLINE_LIMIT = 30;
+import ParticleLogin from '../../particle-login';
+
+const SPARKLINE_LIMIT = 30;
 
 class PageLoading extends React.Component {
   render() {
@@ -82,7 +82,7 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    spark.login({ accessToken: TOKEN });
+    spark.login(ParticleLogin);
   }
 
   renderLoading() {

@@ -5,6 +5,18 @@ Monitor your environment temperature and light using a Particle Photon and displ
 
 ### Web dashboard
 
+First, edit `particle-login.json` file at the root of the project with your Particle Cloud credentials or your Access Token:
+
+```json
+{ "username": "user@email.com", "password": "pass" }
+```
+
+```json
+{ "accessToken": "ACCESS_TOKEN" }
+```
+
+Then you are ready to run the project:
+
 ```shell
 npm install
 gulp
