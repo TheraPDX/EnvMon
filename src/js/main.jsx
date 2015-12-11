@@ -42,6 +42,7 @@ class App extends React.Component {
       },
       temperature_history: [],
       light: 0,
+      distance: 0,
     };
   }
 
@@ -68,6 +69,12 @@ class App extends React.Component {
     })
   }
 
+  setDist(distance) {
+    this.setState({
+      distance
+    })
+  }
+
   componentWillMount() {
     let ctx = this;
 
@@ -77,6 +84,9 @@ class App extends React.Component {
       });
       spark.getEventStream('getLight', 'mine', function(data) {
         ctx.setLight(data.data);
+      });
+      spark.getEventStream('getDist', 'mine', function(data) {
+        console.log(data.data);
       });
     });
   }
