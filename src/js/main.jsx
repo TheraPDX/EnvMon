@@ -1,127 +1,78 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Sparklines, SparklinesLine } from 'react-sparklines';
+import { createStore } from 'redux';
 import spark from 'spark';
 import utils from './utils';
 
 import ParticleLogin from '../../particle-login';
 
-const SPARKLINE_LIMIT = 30;
-
-class PageLoading extends React.Component {
-  render() {
-    return(
-      <p>Loading...</p>
-    );
+const initialState = {
+  temperature: {
+    celsius: '0',
+    fahrenheit: '0',
   }
+};
+
+const reducer = (state = initialState, action) => {
+  switch (action.type) {
+    case 'UPDATE_TEMPERATURE':
+      return {
+        temperature: {
+          celsius: action.celsius,
+          fahrenheit: action.fahrenheit,
+        }
+      };
+    default:
+      return state;
+  }
+};
+
+const store = createStore(reducer);
+
+const Temperature = ({ value }) => (
+  <div style={{marginBottom: "20px"}}>
+    <div className='main-temp'>
+      {value.temperature.celsius} &deg;C
+    </div>
+    <div className='secondary-temp'>
+      {value.temperature.fahrenheit} &deg;F
+    </div>
+  </div>
+);
+
+const App = () => (
+  <div className='app-container'>
+    <div className='temperature-widget'>
+      <Temperature value={store.getState()} />
+    </div>
+  </div>
+);
+
+const render = () => {
+  ReactDOM.render(
+    <App/>,
+    document.getElementById('app')
+  );
 }
 
-class Temperature extends React.Component {
-  render() {
-    return (
-      <div style={{marginBottom: "20px"}}>
-        <div className='main-temp'>
-          {this.props.temperature.celsius} &deg;C
-        </div>
-        <div className='secondary-temp'>
-          {this.props.temperature.fahrenheit} &deg;F
-        </div>
-      </div>
-    );
-  }
-}
+store.subscribe(render);
+render();
 
-class App extends React.Component {
-  constructor() {
-    super();
-    this.state = {
-      loading: false,
-      temperature: {
-        celsius: 0,
-        fahrenheit: 0,
-      },
-      temperature_history: [],
-      light: 0,
-      distance: 0,
-    };
-  }
-
-  setTemperature(value) {
-    if(isNaN(value)) {
+spark.on('login', function() {
+  spark.getEventStream('getTemp', 'mine', function({data}) {
+    if(isNaN(data)) {
       return;
     }
-    var celsius = value - 273.15;
-    var fahrenheit = utils.formatNumber(utils.celsiusToFahrenheit(celsius), 2);
+
+    let celsius = data - 273.15;
+    let fahrenheit = utils.formatNumber(utils.celsiusToFahrenheit(celsius), 2);
     celsius = utils.formatNumber(celsius, 1);
 
-    this.setState({
-      temperature: {
-        celsius,
-        fahrenheit,
-      },
-      temperature_history: [...this.state.temperature_history, celsius],
+    store.dispatch({
+      type: 'UPDATE_TEMPERATURE',
+      celsius,
+      fahrenheit,
     });
-  }
-
-  setLight(light) {
-    this.setState({
-      light
-    })
-  }
-
-  setDist(distance) {
-    this.setState({
-      distance
-    })
-  }
-
-  componentWillMount() {
-    let ctx = this;
-
-    spark.on('login', function() {
-      spark.getEventStream('getTemp', 'mine', function(data) {
-        ctx.setTemperature(data.data);
-      });
-      spark.getEventStream('getLight', 'mine', function(data) {
-        ctx.setLight(data.data);
-      });
-      spark.getEventStream('getDist', 'mine', function(data) {
-        console.log(data.data);
-      });
-    });
-  }
-
-  componentDidMount() {
-    spark.login(ParticleLogin);
-  }
-
-  renderLoading() {
-    return <PageLoading/>;
-  }
-
-  render() {
-    if(this.state.loading) {
-      return this.renderLoading();
-    }
-
-    let style = {
-        backgroundColor: `rgba(4, 30, 55, ${this.state.light / 4096})`
-    }
-    return (
-      <div className='app-container' style={style}>
-        <div className='temperature-widget'>
-          <Temperature temperature={this.state.temperature} />
-
-          <Sparklines data={this.state.temperature_history} limit={SPARKLINE_LIMIT} width={450} height={100}>
-            <SparklinesLine style={{stroke: "#82BB5D", strokeWidth: "2", fill: "none"}} />
-          </Sparklines>
-        </div>
-      </div>
-    );
-  }
-}
-
-ReactDOM.render(
-  <App/>,
-  document.getElementById('app')
-);
+  });
+});
+spark.login(ParticleLogin);

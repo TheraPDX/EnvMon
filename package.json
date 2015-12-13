@@ -1,11 +1,12 @@
 {
   "name": "env-mon",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "",
   "dependencies": {
     "react": "^0.14.3",
     "react-dom": "^0.14.3",
     "react-sparklines": "^1.4.2",
+    "redux": "^3.0.4",
     "spark": "^1.0.0"
   },
   "devDependencies": {
