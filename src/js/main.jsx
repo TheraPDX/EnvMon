@@ -8,9 +8,10 @@ import ParticleLogin from '../../particle-login';
 
 const initialState = {
   temperature: {
-    celsius: '0',
-    fahrenheit: '0',
-  }
+    celsius: 0,
+    fahrenheit: 0,
+  },
+  light: 0,
 };
 
 const reducer = (state = initialState, action) => {
@@ -20,7 +21,13 @@ const reducer = (state = initialState, action) => {
         temperature: {
           celsius: action.celsius,
           fahrenheit: action.fahrenheit,
-        }
+        },
+        light: state.light,
+      };
+    case 'UPDATE_LIGHT':
+      return {
+        temperature: state.temperature,
+        light: action.light,
       };
     default:
       return state;
@@ -41,7 +48,7 @@ const Temperature = ({ value }) => (
 );
 
 const App = () => (
-  <div className='app-container'>
+  <div className='app-container' style={{backgroundColor: `rgba(4, 30, 55, ${store.getState().light / 4096})`}}>
     <div className='temperature-widget'>
       <Temperature value={store.getState()} />
     </div>
@@ -59,6 +66,13 @@ store.subscribe(render);
 render();
 
 spark.on('login', function() {
+  spark.getEventStream('getLight', 'mine', function({data}) {
+    store.dispatch({
+      type: 'UPDATE_LIGHT',
+      light: data,
+    });
+  });
+
   spark.getEventStream('getTemp', 'mine', function({data}) {
     if(isNaN(data)) {
       return;
