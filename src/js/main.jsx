@@ -1,33 +1,39 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { createStore } from 'redux';
+import { Sparklines, SparklinesLine } from 'react-sparklines';
 import spark from 'spark';
 import utils from './utils';
 
 import ParticleLogin from '../../particle-login';
+
+const SPARKLINE_LIMIT = 30;
 
 const initialState = {
   temperature: {
     celsius: 0,
     fahrenheit: 0,
   },
+  temperature_history: [],
   light: 0,
 };
 
-const reducer = (state = initialState, action) => {
-  switch (action.type) {
+const reducer = (state = initialState, {type, celsius, fahrenheit, light}) => {
+  switch (type) {
     case 'UPDATE_TEMPERATURE':
       return {
         temperature: {
-          celsius: action.celsius,
-          fahrenheit: action.fahrenheit,
+          celsius: celsius,
+          fahrenheit: fahrenheit,
         },
+        temperature_history: [celsius, ...state.temperature_history],
         light: state.light,
       };
     case 'UPDATE_LIGHT':
       return {
         temperature: state.temperature,
-        light: action.light,
+        temperature_history: state.temperature_history,
+        light: light,
       };
     default:
       return state;
@@ -47,13 +53,19 @@ const Temperature = ({ value }) => (
   </div>
 );
 
-const App = () => (
-  <div className='app-container' style={{backgroundColor: `rgba(4, 30, 55, ${store.getState().light / 4096})`}}>
-    <div className='temperature-widget'>
-      <Temperature value={store.getState()} />
+const App = () => {
+  const style = { backgroundColor: `rgba(4, 30, 55, ${store.getState().light / 4096})` };
+  return (
+    <div className='app-container' style={style}>
+      <div className='temperature-widget'>
+        <Temperature value={store.getState()} />
+        <Sparklines data={store.getState().temperature_history} limit={SPARKLINE_LIMIT} width={450} height={100}>
+          <SparklinesLine style={{stroke: "#82BB5D", strokeWidth: "2", fill: "none"}} />
+        </Sparklines>
+      </div>
     </div>
-  </div>
-);
+  );
+}
 
 const render = () => {
   ReactDOM.render(
